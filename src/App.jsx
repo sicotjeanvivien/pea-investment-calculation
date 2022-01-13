@@ -9,25 +9,43 @@ function App() {
   const [initialInvestment, setInitialInvestment] = useState(1000);
   const [monthlyInstallment, setMonthlyInstallment] = useState(150.00);
   const [annualInterestRate, setAnnualInterestRate] = useState(10);
-  const [numberOfYearsOfPlacement, setNumberOfYearsOfPlacement] = useState(42);
+  const [numberOfYearsOfPlacement, setNumberOfYearsOfPlacement] = useState(10);
+  const [compoundInterest, setCompoundInterest] = useState([{}]);
 
   const handleChange = useCallback(() => {
-    console.log('lol');
     setInitialInvestment(i => document.getElementById('initialInvestment').value);
     setMonthlyInstallment(i => document.getElementById('monthlyInstallment').value);
     setAnnualInterestRate(i => {
       const value = document.getElementById('annualInterestRate').value;
       if (0 < value && value < 100) {
         return value;
-      }else{
+      } else {
         document.getElementById('annualInterestRate').value = i;
         return i;
       }
     });
     setNumberOfYearsOfPlacement(i => document.getElementById('numberOfYearsOfPlacement').value);
-  });
+  }, []);
 
-  console.log(initialInvestment, monthlyInstallment, annualInterestRate, numberOfYearsOfPlacement);
+  const calculationCompoundInterest = () => {
+    setCompoundInterest([]);
+    for (let i = 0; i < numberOfYearsOfPlacement; i++) {
+      setCompoundInterest(ci => {
+        let investmentSum = parseFloat(initialInvestment) + parseFloat(monthlyInstallment) * 12 * (i + 1);
+        let interestWin = (parseFloat(initialInvestment) + parseFloat(monthlyInstallment) * 12 * (i)) * parseFloat(annualInterestRate) / 100;
+        let newCompoundInterest = {
+          "investmentSum": investmentSum,
+          "interestWin": interestWin
+        };
+        return [...ci, newCompoundInterest]
+      })
+    }
+  };
+  useEffect(() => {
+    calculationCompoundInterest();
+  }, [initialInvestment, monthlyInstallment, annualInterestRate, numberOfYearsOfPlacement])
+  
+  console.log(compoundInterest);
   return (
     <div className='container'>
       <h1 className='text-center'>Simulation d'intérêt composés</h1>
@@ -41,7 +59,7 @@ function App() {
             onChange={handleChange}
           />
         </div>
-        <div className="col-6"><InvestmentFinal /></div>
+        <div className="col-6">{compoundInterest.length > 1 ? <InvestmentFinal compoundInterest={compoundInterest}/> : "" } </div>
         <div className="col-6"><InvestementFinalUnder5YearsOld /></div>
       </div>
       <div className="row">
