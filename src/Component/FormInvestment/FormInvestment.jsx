@@ -42,7 +42,7 @@ const FormInvestment = ({ initialInvestment, monthlyInstallment, annualInterestR
           <label htmlFor="numberOfYearsOfPlacement" className='form-label'>Nombre d'année du placement</label>
           <div className="input-group">
             <input type="number" id="numberOfYearsOfPlacement" className='form-control' placeholder="Nombre d'année..."
-              step={1} min={0}
+              step={1} min={1}
               defaultValue={numberOfYearsOfPlacement}
               onChange={onChange}
             />

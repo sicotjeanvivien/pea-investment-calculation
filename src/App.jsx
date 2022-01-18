@@ -28,24 +28,31 @@ function App() {
   }, []);
 
   const calculationCompoundInterest = () => {
-    setCompoundInterest([]);
-    for (let i = 0; i < numberOfYearsOfPlacement; i++) {
-      setCompoundInterest(ci => {
+    setCompoundInterest(ci => {
+      let newCompoundInterest = [];
+      for (let i = 0; i < numberOfYearsOfPlacement; i++) {
         let investmentSum = parseFloat(initialInvestment) + parseFloat(monthlyInstallment) * 12 * (i + 1);
-        let interestWin = (parseFloat(initialInvestment) + parseFloat(monthlyInstallment) * 12 * (i)) * parseFloat(annualInterestRate) / 100;
-        let newCompoundInterest = {
+        let interestSum = 0;
+        newCompoundInterest.map((compoundInterest, index) => {
+          console.log(index, compoundInterest.interestWin);
+          interestSum += compoundInterest.interestWin;
+        });
+        let investmentForInterest = parseFloat(initialInvestment) + interestSum + parseFloat(monthlyInstallment) * 12 * (i);
+        let interestWin = (Math.round(investmentForInterest * 100)/100) * parseFloat(annualInterestRate) / 100;
+        newCompoundInterest = [...newCompoundInterest, {
           "investmentSum": investmentSum,
+          "interestSum": interestSum,
+          "investmentForInterest": investmentForInterest,
           "interestWin": interestWin
-        };
-        return [...ci, newCompoundInterest]
-      })
-    }
+        }];
+      }
+      return newCompoundInterest;
+    })
   };
   useEffect(() => {
     calculationCompoundInterest();
   }, [initialInvestment, monthlyInstallment, annualInterestRate, numberOfYearsOfPlacement])
-  
-  console.log(compoundInterest);
+
   return (
     <div className='container'>
       <h1 className='text-center'>Simulation d'intérêt composés</h1>
@@ -59,12 +66,13 @@ function App() {
             onChange={handleChange}
           />
         </div>
-        <div className="col-6">{compoundInterest.length > 1 ? <InvestmentFinal compoundInterest={compoundInterest}/> : "" } </div>
+        <div className="col-6">{compoundInterest.length > 0 ? <InvestmentFinal compoundInterest={compoundInterest.pop()} /> : ""} </div>
         <div className="col-6"><InvestementFinalUnder5YearsOld /></div>
       </div>
       <div className="row">
 
       </div>
+      {JSON.stringify(compoundInterest)}
     </div>
   );
 }
