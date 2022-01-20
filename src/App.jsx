@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import FormInvestment from './Component/FormInvestment/FormInvestment';
 import InvestmentFinal from './Component/InvestmentFinal/investmentFinal';
 import InvestementFinalUnder5YearsOld from './Component/InvestementFinalUnder5YearsOld/InvestementFinalUnder5YearsOld'
+import CustomMethods from './Utils/CustomMethods';
+import Calendar from './Component/Calendar/Calendar';
 
 function App() {
   const [initialInvestment, setInitialInvestment] = useState(1000);
@@ -30,20 +32,19 @@ function App() {
   const calculationCompoundInterest = () => {
     setCompoundInterest(ci => {
       let newCompoundInterest = [];
-      for (let i = 0; i < numberOfYearsOfPlacement; i++) {
+      for (let i = 0; i <= numberOfYearsOfPlacement; i++) {
         let investmentSum = parseFloat(initialInvestment) + parseFloat(monthlyInstallment) * 12 * (i + 1);
         let interestSum = 0;
         newCompoundInterest.map((compoundInterest, index) => {
-          console.log(index, compoundInterest.interestWin);
           interestSum += compoundInterest.interestWin;
         });
         let investmentForInterest = parseFloat(initialInvestment) + interestSum + parseFloat(monthlyInstallment) * 12 * (i);
-        let interestWin = (Math.round(investmentForInterest * 100)/100) * parseFloat(annualInterestRate) / 100;
+        let interestWin = investmentForInterest * parseFloat(annualInterestRate) / 100;
         newCompoundInterest = [...newCompoundInterest, {
-          "investmentSum": investmentSum,
-          "interestSum": interestSum,
-          "investmentForInterest": investmentForInterest,
-          "interestWin": interestWin
+          "investmentSum": CustomMethods.mathAround(investmentSum),
+          "interestSum": CustomMethods.mathAround(interestSum),
+          "investmentForInterest": CustomMethods.mathAround(investmentForInterest),
+          "interestWin": CustomMethods.mathAround(interestWin)
         }];
       }
       return newCompoundInterest;
@@ -70,9 +71,8 @@ function App() {
         <div className="col-6"><InvestementFinalUnder5YearsOld /></div>
       </div>
       <div className="row">
-
+        <Calendar compoundInterest={compoundInterest} />
       </div>
-      {JSON.stringify(compoundInterest)}
     </div>
   );
 }
